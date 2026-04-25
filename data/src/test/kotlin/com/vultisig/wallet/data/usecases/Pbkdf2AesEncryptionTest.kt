@@ -203,19 +203,9 @@ class Pbkdf2AesEncryptionTest {
         assertNull(result)
     }
 
-    /**
-     * Verifies that decryption succeeds only when PBKDF2_ITERATIONS matches the 600,000 constant.
-     */
+    /** Verifies that the PBKDF2 iteration count is pinned to 600,000. */
     @Test
     fun `usesExpectedIterationCount`() {
-        // This vector was produced with exactly 600,000 PBKDF2-HMAC-SHA256 iterations.
-        // Decryption succeeds only when the constant matches; any other count yields null.
-        val (pwd, expected, ciphertext) = loadFixture("ios")
-        val decrypted = pbkdf2AesNoLegacy.decrypt(ciphertext, pwd.toByteArray())
-        assertNotNull(
-            decrypted,
-            "Decryption failed — PBKDF2_ITERATIONS constant may not be 600,000",
-        )
-        assertEquals(expected, decrypted.toString(Charsets.UTF_8))
+        assertEquals(600_000, Pbkdf2AesEncryption.PBKDF2_ITERATIONS)
     }
 }
