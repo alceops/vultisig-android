@@ -91,6 +91,7 @@ internal class VaultRepositoryImplTest {
 
     // ---- get ----------------------------------------------------------------
 
+    /** Verifies [get] returns null when no vault matches the given id in the DAO. */
     @Test
     fun `get returns null when vault does not exist`() = runTest {
         coEvery { vaultDao.loadById("missing") } returns null
@@ -98,6 +99,7 @@ internal class VaultRepositoryImplTest {
         assertNull(repository.get("missing"))
     }
 
+    /** Verifies [get] maps the DAO entity to a [Vault] with the correct id and name. */
     @Test
     fun `get returns vault with correct id and name`() = runTest {
         coEvery { vaultDao.loadById("vault-1") } returns makeVaultWithTokens()
@@ -111,6 +113,7 @@ internal class VaultRepositoryImplTest {
 
     // ---- add ----------------------------------------------------------------
 
+    /** Verifies [add] delegates the insert call to the DAO. */
     @Test
     fun `add delegates to dao insert`() = runTest {
         repository.add(Vault(id = "vault-1", name = "V"))
@@ -120,6 +123,7 @@ internal class VaultRepositoryImplTest {
 
     // ---- upsert -------------------------------------------------------------
 
+    /** Verifies [upsert] delegates the upsert call to the DAO. */
     @Test
     fun `upsert delegates to dao upsert`() = runTest {
         repository.upsert(Vault(id = "vault-1", name = "V"))
@@ -127,6 +131,7 @@ internal class VaultRepositoryImplTest {
         coVerify { vaultDao.upsert(any()) }
     }
 
+    /** Verifies coins are forwarded to the DAO unchanged during upsert. */
     @Test
     fun `upsert preserves coins in the captured vault`() = runTest {
         val captured = slot<VaultWithKeySharesAndTokens>()
@@ -141,6 +146,7 @@ internal class VaultRepositoryImplTest {
 
     // ---- delete -------------------------------------------------------------
 
+    /** Verifies [delete] passes the vault id to the DAO delete method. */
     @Test
     fun `delete delegates to dao with correct id`() = runTest {
         repository.delete("vault-1")
@@ -150,6 +156,7 @@ internal class VaultRepositoryImplTest {
 
     // ---- setVaultName -------------------------------------------------------
 
+    /** Verifies [setVaultName] passes both the vault id and new name to the DAO. */
     @Test
     fun `setVaultName delegates to dao with vault id and new name`() = runTest {
         repository.setVaultName("vault-1", "Renamed")
@@ -159,6 +166,7 @@ internal class VaultRepositoryImplTest {
 
     // ---- getByEcdsa ---------------------------------------------------------
 
+    /** Verifies [getByEcdsa] returns the matching vault when the ECDSA key is found. */
     @Test
     fun `getByEcdsa returns vault when key matches`() = runTest {
         coEvery { vaultDao.loadByEcdsa("ecdsa-vault-1") } returns makeVaultWithTokens()
@@ -169,6 +177,7 @@ internal class VaultRepositoryImplTest {
         assertEquals("vault-1", vault.id)
     }
 
+    /** Verifies [getByEcdsa] returns null when the ECDSA key has no match. */
     @Test
     fun `getByEcdsa returns null when key has no match`() = runTest {
         coEvery { vaultDao.loadByEcdsa("unknown-key") } returns null
@@ -178,6 +187,7 @@ internal class VaultRepositoryImplTest {
 
     // ---- getAll -------------------------------------------------------------
 
+    /** Verifies [getAll] returns all vaults returned by the DAO. */
     @Test
     fun `getAll returns every vault from dao`() = runTest {
         coEvery { vaultDao.loadAll() } returns
@@ -190,6 +200,7 @@ internal class VaultRepositoryImplTest {
         assertEquals("v2", vaults[1].id)
     }
 
+    /** Verifies [getAll] returns an empty list when the DAO has no vaults. */
     @Test
     fun `getAll returns empty list when dao is empty`() = runTest {
         coEvery { vaultDao.loadAll() } returns emptyList()
@@ -198,6 +209,7 @@ internal class VaultRepositoryImplTest {
         assertTrue(vaults.isEmpty())
     }
 
+    /** Verifies [getAll] silently drops coins whose chain string is not a known [Chain] value. */
     @Test
     fun `getAll skips coins whose chain value is not in the Chain enum`() = runTest {
         val unknownChainCoin =
@@ -225,6 +237,7 @@ internal class VaultRepositoryImplTest {
 
     // ---- getEnabledTokens / getEnabledChains --------------------------------
 
+    /** Verifies [getEnabledTokens] emits the coins that belong to the given vault. */
     @Test
     fun `getEnabledTokens emits coins belonging to vault`() = runTest {
         coEvery { vaultDao.loadById("vault-1") } returns
@@ -236,6 +249,7 @@ internal class VaultRepositoryImplTest {
         assertEquals("ETH", tokens[0].ticker)
     }
 
+    /** Verifies [getEnabledChains] emits only chains that have a native-token coin enabled. */
     @Test
     fun `getEnabledChains emits only native-token chains`() = runTest {
         coEvery { vaultDao.loadById("vault-1") } returns
@@ -248,6 +262,7 @@ internal class VaultRepositoryImplTest {
 
     // ---- addTokenToVault ----------------------------------------------------
 
+    /** Verifies [addTokenToVault] delegates to the DAO's enableCoins method. */
     @Test
     fun `addTokenToVault calls dao enableCoins`() = runTest {
         repository.addTokenToVault("vault-1", ethCoin())
@@ -255,6 +270,7 @@ internal class VaultRepositoryImplTest {
         coVerify { vaultDao.enableCoins(any()) }
     }
 
+    /** Verifies [addTokenToVault] builds the coin entity id as "ticker-chainRaw". */
     @Test
     fun `addTokenToVault constructs coin entity id as ticker-chainRaw`() = runTest {
         val captured = slot<List<CoinEntity>>()
@@ -267,6 +283,7 @@ internal class VaultRepositoryImplTest {
 
     // ---- deleteTokenFromVault -----------------------------------------------
 
+    /** Verifies [deleteTokenFromVault] passes the correct coin entity id to the DAO. */
     @Test
     fun `deleteTokenFromVault passes correct token id to dao`() = runTest {
         repository.deleteTokenFromVault("vault-1", ethCoin())
@@ -276,6 +293,7 @@ internal class VaultRepositoryImplTest {
 
     // ---- disableTokenFromVault ----------------------------------------------
 
+    /** Verifies [disableTokenFromVault] passes the correct token id and chain id to the DAO. */
     @Test
     fun `disableTokenFromVault passes correct token id and chain id to dao`() = runTest {
         repository.disableTokenFromVault("vault-1", ethCoin())
@@ -285,6 +303,7 @@ internal class VaultRepositoryImplTest {
 
     // ---- deleteChainFromVault -----------------------------------------------
 
+    /** Verifies [deleteChainFromVault] passes the chain's raw string id to the DAO. */
     @Test
     fun `deleteChainFromVault calls dao disableChainFromVault with chain raw id`() = runTest {
         repository.deleteChainFromVault("vault-1", Chain.Ethereum)
@@ -294,6 +313,7 @@ internal class VaultRepositoryImplTest {
 
     // ---- signing lib-type round-trips ---------------------------------------
 
+    /** Verifies that [SigningLibType.DKLS] survives a DAO round-trip without corruption. */
     @Test
     fun `libType DKLS is preserved when loading vault`() = runTest {
         coEvery { vaultDao.loadById("v") } returns
@@ -303,6 +323,7 @@ internal class VaultRepositoryImplTest {
         assertEquals(SigningLibType.DKLS, repository.get("v")?.libType)
     }
 
+    /** Verifies that [SigningLibType.GG20] survives a DAO round-trip without corruption. */
     @Test
     fun `libType GG20 is preserved when loading vault`() = runTest {
         coEvery { vaultDao.loadById("v") } returns
@@ -312,6 +333,7 @@ internal class VaultRepositoryImplTest {
         assertEquals(SigningLibType.GG20, repository.get("v")?.libType)
     }
 
+    /** Verifies that [SigningLibType.KeyImport] survives a DAO round-trip without corruption. */
     @Test
     fun `libType KeyImport is preserved when loading vault`() = runTest {
         coEvery { vaultDao.loadById("v") } returns
@@ -323,6 +345,7 @@ internal class VaultRepositoryImplTest {
 
     // ---- hasVaults / isNameTaken / getDisabledCoinIds -----------------------
 
+    /** Verifies [hasVaults] returns true when the DAO reports at least one vault. */
     @Test
     fun `hasVaults returns true when dao reports vaults present`() = runTest {
         coEvery { vaultDao.hasVaults() } returns true
@@ -330,6 +353,7 @@ internal class VaultRepositoryImplTest {
         assertTrue(repository.hasVaults())
     }
 
+    /** Verifies [hasVaults] returns false when the DAO reports no vaults. */
     @Test
     fun `hasVaults returns false when dao reports no vaults`() = runTest {
         coEvery { vaultDao.hasVaults() } returns false
@@ -337,6 +361,7 @@ internal class VaultRepositoryImplTest {
         assertTrue(!repository.hasVaults())
     }
 
+    /** Verifies [isNameTaken] returns true when another vault already uses the given name. */
     @Test
     fun `isNameTaken returns true when another vault uses the same name`() = runTest {
         coEvery { vaultDao.countByNameExcluding("My Vault", "other-id") } returns 1
@@ -344,6 +369,7 @@ internal class VaultRepositoryImplTest {
         assertTrue(repository.isNameTaken("My Vault", "other-id"))
     }
 
+    /** Verifies [isNameTaken] returns false when no other vault uses the given name. */
     @Test
     fun `isNameTaken returns false when name is unique`() = runTest {
         coEvery { vaultDao.countByNameExcluding("Unique Name", "any-id") } returns 0
@@ -351,6 +377,7 @@ internal class VaultRepositoryImplTest {
         assertTrue(!repository.isNameTaken("Unique Name", "any-id"))
     }
 
+    /** Verifies [getDisabledCoinIds] delegates to the DAO and returns its result. */
     @Test
     fun `getDisabledCoinIds delegates to dao`() = runTest {
         coEvery { vaultDao.loadDisabledCoinIds("vault-1") } returns listOf("ETH-Ethereum")

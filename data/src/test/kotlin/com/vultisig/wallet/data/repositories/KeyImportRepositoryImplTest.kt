@@ -159,6 +159,10 @@ internal class KeyImportRepositoryImplTest {
         assertTrue("***" in str)
     }
 
+    /**
+     * Verifies that Bitcoin chain settings with Default derivation path are stored and retrieved
+     * correctly.
+     */
     @Test
     fun `setChainSettings preserves Default derivation for Bitcoin`() {
         repository.setMnemonic("test")
@@ -177,6 +181,10 @@ internal class KeyImportRepositoryImplTest {
         assertEquals(DerivationPath.Default, data.chainSettings[0].derivationPath)
     }
 
+    /**
+     * Verifies that Ethereum chain settings with Default derivation path are stored and retrieved
+     * correctly.
+     */
     @Test
     fun `setChainSettings preserves Default derivation for Ethereum`() {
         repository.setMnemonic("test")
@@ -195,6 +203,10 @@ internal class KeyImportRepositoryImplTest {
         assertEquals(DerivationPath.Default, data.chainSettings[0].derivationPath)
     }
 
+    /**
+     * Verifies that Solana chain settings with Phantom derivation path survive a full
+     * store/retrieve round-trip.
+     */
     @Test
     fun `setChainSettings preserves Phantom derivation for Solana round-trip`() {
         repository.setMnemonic("test")
@@ -213,6 +225,10 @@ internal class KeyImportRepositoryImplTest {
         assertEquals(DerivationPath.Phantom, data.chainSettings[0].derivationPath)
     }
 
+    /**
+     * Verifies that Cosmos (GaiaChain) chain settings with Default derivation path are stored and
+     * retrieved correctly.
+     */
     @Test
     fun `setChainSettings preserves Default derivation for Cosmos`() {
         repository.setMnemonic("test")
@@ -231,6 +247,10 @@ internal class KeyImportRepositoryImplTest {
         assertEquals(DerivationPath.Default, data.chainSettings[0].derivationPath)
     }
 
+    /**
+     * Verifies that Tron chain settings with Default derivation path are stored and retrieved
+     * correctly.
+     */
     @Test
     fun `setChainSettings preserves Default derivation for Tron`() {
         repository.setMnemonic("test")
