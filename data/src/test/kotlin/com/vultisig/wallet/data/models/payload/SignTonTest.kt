@@ -2,6 +2,7 @@ package com.vultisig.wallet.data.models.payload
 
 import org.junit.jupiter.api.Assertions.assertDoesNotThrow
 import org.junit.jupiter.api.Assertions.assertThrows
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
 class SignTonTest {
@@ -49,7 +50,7 @@ class SignTonTest {
     @Test
     fun `payload and stateInit default to empty strings`() {
         val msg = TonMessage(toAddress = "EQAB", toAmount = 1L)
-        assert(msg.payload.isEmpty())
-        assert(msg.stateInit.isEmpty())
+        assertTrue(msg.payload.isEmpty())
+        assertTrue(msg.stateInit.isEmpty())
     }
 }

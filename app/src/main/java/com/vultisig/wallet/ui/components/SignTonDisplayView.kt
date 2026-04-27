@@ -2,17 +2,16 @@ package com.vultisig.wallet.ui.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -43,8 +42,11 @@ fun SignTonDisplayView(signTon: SignTon, modifier: Modifier = Modifier) {
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Absolute.SpaceBetween,
-            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier =
+                Modifier.fillMaxWidth()
+                    .clickable { isExpanded = !isExpanded }
+                    .padding(vertical = 8.dp),
         ) {
             Text(
                 text = "${stringResource(R.string.sign_ton_messages)} (${signTon.messages.size})",
@@ -52,14 +54,12 @@ fun SignTonDisplayView(signTon: SignTon, modifier: Modifier = Modifier) {
                 color = Theme.v2.colors.text.tertiary,
             )
 
-            IconButton(onClick = { isExpanded = !isExpanded }, modifier = Modifier.size(10.dp)) {
-                UiIcon(
-                    drawableResId = R.drawable.chevron,
-                    tint = Theme.v2.colors.neutrals.n100,
-                    size = 8.dp,
-                    modifier = Modifier.graphicsLayer(rotationZ = if (isExpanded) 180f else 0f),
-                )
-            }
+            UiIcon(
+                drawableResId = R.drawable.chevron,
+                tint = Theme.v2.colors.neutrals.n100,
+                size = 8.dp,
+                modifier = Modifier.graphicsLayer(rotationZ = if (isExpanded) 180f else 0f),
+            )
         }
 
         AnimatedVisibility(visible = isExpanded) {
